@@ -1,0 +1,13 @@
+pandas 
+numpy 
+pandas_profiling 
+ipywidgets 
+sklearn 
+matplotlib 
+seaborn 
+sqlalchemy 
+tensorflow 
+keras 
+kaggle 
+psycopg2 
+ipykernel
