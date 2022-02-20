@@ -1,76 +1,87 @@
-# 🏪 Churn Prediction: Project Overview
+# 🏦 Bank Churn Analysis 2: Project Overview
 * End to end project reasearching the effects personal attributes have on the diagnosis of diabetes.
 * Optimised XGBoost using GridsearchCV  to reach the best model. 
 * Built a stakeholder facing visual deployment of model to predict churn of new customers 
 * Deployed Model in Power BI for Business Intelligence analysis 
+* An artificial neural network (ANN) is a type of machine learning algorithm that is similar to the brain.
 
-[Use Deployed Model](https://p7-diabetes-model.herokuapp.com/)
+[View prerequisite of this project](https://github.com/MattithyahuData/P2-Bank-churn-prediction)
+
+[View Deployed Model in Power BI](https://app.powerbi.com/view?r=eyJrIjoiNDExYjQ0OTUtNWI5MC00OTQ5LWFlYmUtYjNkMzE1YzE2NmE0IiwidCI6IjYyZWE3MDM0LWI2ZGUtNDllZS1iZTE1LWNhZThlOWFiYzdjNiJ9&pageName=ReportSection)
 
 ## Table of Contents 
-*   [Resources](#resources)
-*   [Data Collection](#DataCollection)
-*   [Data Pre-processing](#DataPre-processing)
-*   [Data Warehousing](#DataWarehousing)
-*   [Exploratory data analysis](#EDA)
-*   [Data Visualisation & Analytics](#Dataviz)
-*   [Business Intelligence](#Busintelli)
-*   [Feature Engineering](#FeatEng)
-*   [ML/DL Model Building](#ModelBuild)
-*   [Model performance](#ModelPerf)
-*   [Model Optimisation](#ModelOpt)
-*   [Model Evaluation](#ModelEval)
-*   [Model Productionisation](#ModelProd)
-*   [Deployment](#ModelDeploy)
-*   [Project Management (Agile | Scrum)](#Prjmanage)
-*   [Project Evaluation](#PrjEval)
-*   [Looking Ahead](#Lookahead)
-*   [Questions | Contact me ](#Lookahead)
+[Resources](#resources)<br>
+[Data Collection](#DataCollection)<br>
+[Data Pre-processing](#DataPre-processing)<br>
+[Data Warehousing](#DataWarehousing)<br>
+[Exploratory data analysis](#EDA)<br>
+[Data Visualisation & Analytics](#Dataviz)<br>
+[Business Intelligence](#Busintelli)<br>
+[Feature Engineering](#FeatEng)<br>
+[ML/DL Model Building](#ModelBuild)<br>
+[Model performance](#ModelPerf)<br>
+[Model Optimisation](#ModelOpt)<br>
+[Model Evaluation](#ModelEval)<br>
+[Deployment](#ModelDeploy)<br>
+[Project Management (Agile | Scrum)](#Prjmanage)<br>
+[Project Evaluation](#PrjEval)<br>
+[Looking Ahead](#Lookahead)<br>
+[Questions | Contact me ](#Lookahead)<br>
 
 
 <a name="Resources"></a>  
 
 ## Resources Used
-**Python 3, SQL Server, Tableau** 
+**Python 3, PostgreSQL, PowerBI** 
 
-[**Anaconda Packages:**](requirements.txt) **pandas, numpy, pandas_profiling, ipywidgets, sklearn, matplotlib, seaborn, sqlalchemy, pyodbc, kaggle, pickle, lxml**   pandas,numpy,matplotlib,seaborn,sklearn,xgboost,kaggle, pandas_profiling, ipywidgets
+[**Anaconda Packages:**](requirements.txt) **pandas numpy pandas_profiling ipywidgets sklearn matplotlib seaborn sqlalchemy tensorflow keras kaggle psycopg2 ipykernel**<br><br>
+Powershell command for installing anaconda packages used for this project    
+```powershell
+pip install pandas numpy pandas_profiling ipywidgets sklearn matplotlib seaborn sqlalchemy tensorflow keras kaggle psycopg2 ipykernel
+```
 
 <a name="DataCollection"></a>  
 
-## [Data Collection](Code/P7_Code.ipynb)
+## [Data Collection](Code/P6_Code.ipynb)
 Powershell command for data import using kaggle API <br>
 ```
-!kaggle datasets download -d mrmorj/big-mart-sales -p ..\Data --unzip 
+!kaggle datasets download -d kmalit/bank-customer-churn-prediction -p ..\Data --unzip 
 ```
-[Data source link](https://www.kaggle.com/mathchi/diabetes-data-set)
-[Data](Data/diabetes.csv)
-*  Rows: 768 | Columns: 9
-    *   Pregnancies                   
-    *   Glucose                      
-    *   BloodPressure                 
-    *   SkinThickness                 
-    *   Insulin                      
-    *   BMI                    
-    *   DiabetesPedigreeFunction    
-    *   Age                          
-    *   Outcome                       
+[Data source link](https://www.kaggle.com/kmalit/bank-customer-churn-prediction)
+[Data](Data/Churn_Modelling.csv)
+*  Rows: 10000 | Columns: 14
+    *   RowNumber
+    *   CustomerId  
+    *   Surname 
+    *   CreditScore
+    *   Geography
+    *   Gender
+    *   Age
+    *   Tenure
+    *   Balance
+    *   NumOfProducts
+    *   HasCrCard
+    *   IsActiveMember
+    *   EstimatedSalary
+    *   Exited                   
 
 <a name="DataPre-processing"></a>  
 
-## [Data Pre-processing](Code/P7_Code.ipynb)
+## [Data Pre-processing](Code/P6_Code.ipynb)
 After I had all the data I needed, I needed to check it was ready for exploration and later modelling. I made the following changes and created the following variables:   
 *   General NULL and data validity checks  
 
 <a name="DataWarehousing"></a>
 
-## [Data Warehousing](Code/P7_Code.ipynb)
-I warehouse all data in a SQL Server instance for later use and reference.
+## [Data Warehousing](Code/P6_Code.ipynb)
+I warehouse all data in a Postgre database for later use and reference.
 
-*   ETL in python to SQL Server Database.
-*   Formatted column headers to SQL compatibility.  
+*   ETL in python to PostgreSQL Database.
+*   Formatted column headers to SQL compatibility. 
 
 <a name="EDA"></a>  
 
-## [Exploratory data analysis](Code/P7_Code.ipynb) 
+## [Exploratory data analysis](Code/P6_Code.ipynb) 
 I looked at the distributions of the data and the value counts for the various categorical variables that would be fed into the model. Below are a few highlights from the analysis.
 *   79.63% of customers have churned - Distribution of features and their effects on churning - Some features have outliers, visualising this allows for greater clarity on the extent. 
 <img src="images/Churn_barchart_distrib.png" />
@@ -100,59 +111,53 @@ On Page 2 of the interactive dashboard, I have provided the stake holders with t
 
 <a name="FeatEng"></a>  
 
-## [Feature Engineering](Code/P2_Code.ipynb) 
+## [Feature Engineering](Code/P6_Code.ipynb) 
 I transformed the categorical variable(s) 'geography' and 'gender' into dummy variables. I also split the data into train and tests sets with a test size of 20%.
 *   One Hot encoding to encode values
 *   Using RobustScaler to scale  
 
 <a name="ModelBuild"></a> 
 
-## [ML/DL Model Building](Code/P11_Code.ipynb)
+## [ML/DL Model Building](Code/P6_Code.ipynb)
 
-I tried eight different models and evaluated them using initially using accuracy_score and then MSE/RMSE. I chose MSE and RMSE because it is sensitive to outliers, punishes larger errors and is relatively easy to interpret.   
+I used an Artificial Neural Network to attempt to improve the predictive performance for the churn project. ANNs have some key advantages that make them most suitable for certain problems and situations:
+*   ANNs have the ability to learn and model non-linear and complex relationships, which is really important because in real-life, many of the relationships between inputs and outputs are non-linear as well as complex
+*   Neural Networks have the ability to learn by themselves and produce the output that is not limited to the input provided to them.
 
-I tried eight different models:
-*   **KN Neighbors Classifier** 
-*   **Linear SVC** 
-*   **Decision Tree Classifier** 
-*   **Random Forest Classifier**
-*   **XGB Classifier** 
-*   **AdaBoost Classifier**  
-*   **Gaussian NB** 
-*   **Quadratic Discriminant Analysis** 
-
-<img src="images/Crossvalidation.png" />
+<!-- <img src="images/Crossvalidation.png" /> -->
 
 <a name="ModelPerf"></a> 
 
-## [Model performance](Code/P11_Code.ipynb)
-The Quadratic Discriminant Analysis model outperformed the other approaches on the test and validation sets. 
-*   **Quadratic Discriminant Analysis** : Accuracy = 96% 
+## [Model performance](Code/P6_Code.ipynb)
+*   **Artificial Neural Network** : Accuracy = 84.45% 
 
 <a name="ModelOpt"></a> 
 
-## [Model Optimisation](Code/P11_Code.ipynb)
-In this step, I used GridsearchCV to find the best parameters to optimise the performance of the model.
+## [Model Optimisation](Code/P6_Code.ipynb)
+In this step, I used GridsearchCV to find the best parameters to optimise the performance of the model. (* Unless you have an extremely powrful computer using GridsearchCV with a large number of epochs will take a lot of time.)
 Using the best parameters, I improved the model accuracy by **1%**
 
-*   **Quadratic Discriminant Analysis** : Accuracy = 97% | MSE = 0.03 | RMSE = 0.17 (2dp)
+*   **Artificial Neural Network** : Accuracy = 85.45%  
+
 
 <a name="ModelEval"></a> 
 
-## [Model Evaluation](Code/P11_Code.ipynb)
-*   A confusion matrix showing the accuracy score of 97.25% achieved by the model. 
+## [Model Evaluation](Code/P6_Code.ipynb)
+*   A confusion matrix showing the accuracy score of 84.45% achieved by the model. 
 <img src="images/Confusionmatrix.png" />
 
-<a name="ModelProd"></a> 
+<!-- <a name="ModelProd"></a> 
 
-## [Model Productionisation](Code/P11_Code.ipynb)
+## [Model Productionisation](Code/P6_Code.ipynb)
 *   A confusion matrix showing the accuracy score of 97.25% achieved by the model. 
-<img src="images/Confusionmatrix.png" />
+<img src="images/Confusionmatrix.png" /> -->
 
 <a name="ModelDeploy"></a> 
 
 ## [Deployment](https://app.powerbi.com/view?r=eyJrIjoiNDExYjQ0OTUtNWI5MC00OTQ5LWFlYmUtYjNkMzE1YzE2NmE0IiwidCI6IjYyZWE3MDM0LWI2ZGUtNDllZS1iZTE1LWNhZThlOWFiYzdjNiJ9&pageName=ReportSection)
-I built a flask REST API endpoint that was hosted on a local webserver before AWS EC2 deployment. The API endpoint takes in a request value; height and weight and returns predicted BMI index. I also optimised and formatted the frontend using HTML and CSS. 
+I deployed the previous model in Microsoft Power BI for business intellignece use. 
+*   I exported the model as a .pkl file and applied it to the unseen data set to get churn predictions and probability predictions.
+*   I visualised this in Power BI and using conditional formatting to highlight those new customer sthat are more likely to curn based on the models prediction. 
 
 <a name="Prjmanage"></a> 
 
@@ -164,20 +169,19 @@ I built a flask REST API endpoint that was hosted on a local webserver before AW
 
 <a name="PrjEval"></a> 
 
-## [Project Evaluation](Presentation/P11Presentation.pptx) 
+## [Project Evaluation]() 
 *   WWW
     *   The end-to-end process
-    *   Deployment and sharing of work 
+    *   Use of ANN in project
 *   EBI 
     *   Better project management and planning would have made this project faster
-    *   Explore GitHub pages deployment through AWS 
+    *   Time the coe took to run 
 
 <a name="Lookahead"></a> 
 
 ## Looking Ahead
 *   What next
-*   
-*   
+*   Business application and better steps to preserve customer that are likely to churn
 
 <a name="Questions"></a> 
 
