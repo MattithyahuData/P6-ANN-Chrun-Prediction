@@ -44,7 +44,7 @@ pip install pandas numpy pandas_profiling ipywidgets sklearn matplotlib seaborn 
 
 ## [Data Collection](Code/P6_Code.ipynb)
 Powershell command for data import using kaggle API <br>
-```
+```powershell
 !kaggle datasets download -d kmalit/bank-customer-churn-prediction -p ..\Data --unzip 
 ```
 [Data source link](https://www.kaggle.com/kmalit/bank-customer-churn-prediction)
