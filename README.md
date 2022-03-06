@@ -1,6 +1,6 @@
-# 🏦 Bank Churn Analysis 2: Project Overview
-* End to end project reasearching the effects personal attributes have on the diagnosis of diabetes.
-* Optimised XGBoost using GridsearchCV  to reach the best model. 
+# 🏦 Bank Churn Prediction 2: Project Overview
+* End to end project researching the effects customer attributes have on the churn of a bank customer and predicting those customers that may churn.
+* Optimised ANN model using GridsearchCV to reach the best model. 
 * Built a stakeholder facing visual deployment of model to predict churn of new customers 
 * Deployed Model in Power BI for Business Intelligence analysis 
 * An artificial neural network (ANN) is a type of machine learning algorithm that is similar to the brain.
@@ -10,26 +10,26 @@
 [View Deployed Model in Power BI](https://app.powerbi.com/view?r=eyJrIjoiNDExYjQ0OTUtNWI5MC00OTQ5LWFlYmUtYjNkMzE1YzE2NmE0IiwidCI6IjYyZWE3MDM0LWI2ZGUtNDllZS1iZTE1LWNhZThlOWFiYzdjNiJ9&pageName=ReportSection)
 
 ## Table of Contents 
-[Resources](#resources)<br>
-[Data Collection](#DataCollection)<br>
-[Data Pre-processing](#DataPre-processing)<br>
-[Data Warehousing](#DataWarehousing)<br>
-[Exploratory data analysis](#EDA)<br>
-[Data Visualisation & Analytics](#Dataviz)<br>
-[Business Intelligence](#Busintelli)<br>
-[Feature Engineering](#FeatEng)<br>
-[ML/DL Model Building](#ModelBuild)<br>
-[Model performance](#ModelPerf)<br>
-[Model Optimisation](#ModelOpt)<br>
-[Model Evaluation](#ModelEval)<br>
-[Deployment](#ModelDeploy)<br>
-[Project Management (Agile | Scrum)](#Prjmanage)<br>
-[Project Evaluation](#PrjEval)<br>
-[Looking Ahead](#Lookahead)<br>
-[Questions | Contact me ](#Lookahead)<br>
+*   [Resources](#resources)<br>
+*   [Data Collection](#DataCollection)<br>
+*   [Data Pre-processing](#DataPre-processing)<br>
+*   [Data Warehousing](#DataWarehousing)<br>
+*   [Exploratory data analysis](#EDA)<br>
+*   [Data Visualisation & Analytics](#Dataviz)<br>
+*   [Business Intelligence](#Busintelli)<br>
+*   [Feature Engineering](#FeatEng)<br>
+*   [ML/DL Model Building](#ModelBuild)<br>
+*   [Model performance](#ModelPerf)<br>
+*   [Model Optimisation](#ModelOpt)<br>
+*   [Model Evaluation](#ModelEval)<br>
+*   [Deployment](#ModelDeploy)<br>
+*   [Project Management (Agile/Scrum/Kanban)](#Prjmanage)<br>
+*   [Project Evaluation](#PrjEval)<br>
+*   [Looking Ahead](#Lookahead)<br>
+*   [Questions & Contact me](#Lookahead)<br>
 
 
-<a name="Resources"></a>  
+<a name="resources"></a>  
 
 ## Resources Used
 **Python 3, PostgreSQL, PowerBI** 
@@ -70,6 +70,28 @@ Powershell command for data import using kaggle API <br>
 ## [Data Pre-processing](Code/P6_Code.ipynb)
 After I had all the data I needed, I needed to check it was ready for exploration and later modelling. I made the following changes and created the following variables:   
 *   General NULL and data validity checks  
+The data contained no null values and all datatypes lined up with their field description. <br>
+
+```python
+# Viewing the data types of the columns
+data.dtypes
+
+# Viewing dataset shape
+data.shape
+
+# 1st check for null values and datatype check 
+data.info()
+```
+
+<br>
+
+*   Some programming languages can be case sensitive like python and C++ for example, so using lower case letters for variable names allows for straightforward use of data in different programming languages.<br>
+
+```python
+# (SQL standard) Formatting column headers by removing potential capital letters and spaces in column headers 
+data.columns = data.columns.str.lower()
+data.columns = data.columns.str.replace(' ','_')
+```
 
 <a name="DataWarehousing"></a>
 
@@ -78,6 +100,34 @@ I warehouse all data in a Postgre database for later use and reference.
 
 *   ETL in python to PostgreSQL Database.
 *   Formatted column headers to SQL compatibility. 
+
+```python 
+# Function to warehouse data in a Postgre database 
+def store_data(data,tablename):
+    """
+    :param data: variable, enter name of dataset you'd like to warehouse
+    :param tablename: str, enter name of table for data 
+    """
+
+    # SQL table header format
+    tablename = tablename.lower()
+    tablename = tablename.replace(' ','_')
+
+    # Saving cleaned data as csv
+    data.to_csv(f'../Data/{tablename}_clean.csv', index=False)
+
+    # Engine to access postgre
+    engine = create_engine('postgresql+psycopg2://postgres:password@localhost:5432/projectsdb')
+
+    # Loads dataframe into PostgreSQL and replaces table if it exists
+    data.to_sql(f'{tablename}', engine, if_exists='replace',index=False)
+
+    # Confirmation of ETL 
+    return("ETL successful, {num} rows loaded into table: {tb}.".format(num=len(data.iloc[:,0]), tb=tablename))
+ 
+# Calling store_data function to warehouse cleaned data
+store_data(data,"P6 ANN Bank Churn")
+```
 
 <a name="EDA"></a>  
 
@@ -114,7 +164,27 @@ On Page 2 of the interactive dashboard, I have provided the stake holders with t
 ## [Feature Engineering](Code/P6_Code.ipynb) 
 I transformed the categorical variable(s) 'geography' and 'gender' into dummy variables. I also split the data into train and tests sets with a test size of 20%.
 *   One Hot encoding to encode values
-*   Using RobustScaler to scale  
+*   Using StandardScaler to scale  
+
+```python
+# One Hot encoding for remaining categorical field 
+data = pd.get_dummies(data, drop_first = False)
+data.head()
+
+# Using train test split to split train and test data 
+X_train, X_test, y_train, y_test = train_test_split(X, y,  test_size=0.20, random_state=23, shuffle=True, stratify=y)
+
+# Viewing shape of train / test data
+print(X_train.shape)
+print(X_test.shape)
+
+# Feature Scaling
+# In ANN feature scaling is very important so that all inputs are at a comparable range and only the weights assigned to them are, 
+# in fact, the only factor which makes a difference on the predicted value.
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+```
 
 <a name="ModelBuild"></a> 
 
@@ -124,12 +194,50 @@ I used an Artificial Neural Network to attempt to improve the predictive perform
 *   ANNs have the ability to learn and model non-linear and complex relationships, which is really important because in real-life, many of the relationships between inputs and outputs are non-linear as well as complex
 *   Neural Networks have the ability to learn by themselves and produce the output that is not limited to the input provided to them.
 
+```python
+# Initialising the ANN - Defining as a sequence of layers or a Graph
+classifier = Sequential()
+
+# units - number of nodes to add to the hidden layer.
+# Tip: units should be the average of nodes in the input layer (11 nodes) and the number of nodes in the output layer (1 node). For this case is 11+1/2 = 6
+# kernel_initializer - randomly initialize the weight with small numbers close to zero, according to uniform distribution.
+# activation - Activation function.
+# input_dim - number of nodes in the input layer, that our hidden layer should be expecting
+# Distribute features of the first observation, from your dataset, per each node in the input layer. Thus, eleven independent variables will be added to our input layer.
+
+# Adding the input layer and the first hidden layer
+classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu', input_dim = 11 ))
+
+# Adding the second hidden layer
+classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu'))
+
+# Adding the output layer
+classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
+
+# Compiling the ANN # Cost Function : Measure the generated error by comparing the predicted value with the true value.
+classifier.compile(optimizer = 'adam',loss= 'binary_crossentropy',metrics=['accuracy'])
+
+# Fitting the ANN to the Training set  # batch_size : number of observations after which we update the weights  # epochs: How many times you train your model
+classifier.fit(X_train, y_train, batch_size = 10, epochs = 100)
+```
+
 <!-- <img src="images/Crossvalidation.png" /> -->
 
 <a name="ModelPerf"></a> 
 
 ## [Model performance](Code/P6_Code.ipynb)
 *   **Artificial Neural Network** : Accuracy = 84.45% 
+
+```python
+# Predicting the Test set results
+y_pred = classifier.predict(X_test)
+y_pred = (y_pred > 0.5)
+
+# Forming Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+accuracy=accuracy_score(y_test,y_pred)
+print("Accuracy Score: ", accuracy)
+```
 
 <a name="ModelOpt"></a> 
 
@@ -139,11 +247,38 @@ Using the best parameters, I improved the model accuracy by **1%**
 
 *   **Artificial Neural Network** : Accuracy = 85.45%  
 
+```python
+# Hyperparameter tuning 
+parameters = {'batch_size': [25, 32],
+              'epochs': [100, 500],
+              }
+grid_search = GridSearchCV(estimator = classifier,
+                           param_grid = parameters,
+                           scoring = 'accuracy',
+                           cv = 10)
+grid_search = grid_search.fit(X_train, y_train)
+best_parameters = grid_search.best_params_
+best_accuracy = grid_search.best_score_
+
+print("Best parameters: ",best_parameters)
+print("Best accuracy: ",best_accuracy)
+```
+
 
 <a name="ModelEval"></a> 
 
 ## [Model Evaluation](Code/P6_Code.ipynb)
 *   A confusion matrix showing the accuracy score of 84.45% achieved by the model. 
+
+* I tested the model out
+
+```python
+# Testing data on random instance Use sc.transform to scale our data. Remember above we created the method sc
+new_prediction = classifier.predict(sc.transform(np.array([[0.0, 0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000]])))
+new_prediction = (new_prediction > 0.5)
+new_prediction
+# If False returned then the customer is unlikely to churn 
+```
 <img src="images/Confusionmatrix.png" />
 
 <!-- <a name="ModelProd"></a> 
@@ -161,7 +296,7 @@ I deployed the previous model in Microsoft Power BI for business intellignece us
 
 <a name="Prjmanage"></a> 
 
-## [Project Management (Agile | Scrum)](https://www.atlassian.com/software/jira)
+## [Project Management (Agile/Scrum/Kanban)](https://www.atlassian.com/software/jira)
 * Resources used
     * Jira
     * Confluence
@@ -185,8 +320,8 @@ I deployed the previous model in Microsoft Power BI for business intellignece us
 
 <a name="Questions"></a> 
 
-## Questions | Contact me 
+## Questions & Contact me 
 For questions, feedback, and contribution requests contact me
-* ### [Click here to email me](mailto:theanalyticsolutions@gmail.com) 
-* ### [See more projects here](https://github.com/MattithyahuData?tab=repositories)
+* ### [Click here to email me](mailto:contactmattithyahu@gmail.com) 
+* ### [See more projects here](https://mattithyahudata.github.io/)
 
